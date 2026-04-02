@@ -1,0 +1,53 @@
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "rel-ease"
+version = "0.2.0"
+description = "AI-assisted CLI release manager powered by Backboard"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "Rel-Ease contributors" },
+]
+keywords = [
+    "release",
+    "semver",
+    "cli",
+    "backboard",
+    "ai",
+]
+dependencies = [
+    "backboard-sdk>=0.1.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "tomli-w>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+rel-ease = "rel_ease.cli:main"
+
+[tool.hatch.build]
+sources = [
+    "src",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/rel_ease",
+    "README.md",
+    "pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
