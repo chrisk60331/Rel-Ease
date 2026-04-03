@@ -6,3 +6,7 @@
 
 - Updated assistant.py with refactored functions.
 - Improved parsing logic for JSON extraction.
+
+## v0.2.2
+
+- Added `uv.lock` to manage dependencies.
