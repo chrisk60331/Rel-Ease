@@ -18,3 +18,7 @@
 ## v0.2.4
 
 ['Rename project and package name to `release-cli` for consistency.', 'Update `pyproject.toml` and `uv.lock` to reflect new package name.']
+
+## v0.2.5
+
+- Updated `release-cli` package version in `uv.lock` file for consistency.
