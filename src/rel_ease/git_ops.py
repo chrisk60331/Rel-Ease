@@ -83,11 +83,22 @@ def git_tag(cwd: Path, tag: str, message: str | None = None) -> dict:
     }
 
 
+def git_current_branch(cwd: Path) -> str:
+    p = _run_git(cwd, "rev-parse", "--abbrev-ref", "HEAD")
+    return (p.stdout or "main").strip()
+
+
 def git_push(cwd: Path, follow_tags: bool = True) -> dict:
     args = ["push"]
     if follow_tags:
         args.append("--follow-tags")
     p = _run_git(cwd, *args, timeout=180)
+    if p.returncode != 0 and "no upstream branch" in (p.stderr or ""):
+        branch = git_current_branch(cwd)
+        fallback_args = ["push", "--set-upstream", "origin", branch]
+        if follow_tags:
+            fallback_args.append("--follow-tags")
+        p = _run_git(cwd, *fallback_args, timeout=180)
     return {
         "ok": p.returncode == 0,
         "exit_code": p.returncode,

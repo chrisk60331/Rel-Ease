@@ -27,3 +27,8 @@
 
 - Added git tagging and pushing capability to the release command.
 - Improved error handling and user feedback for release steps.
+
+## v0.4.0
+
+- Enhanced `git_push` to handle missing upstream branches.
+- Introduced `git_current_branch` function for better branch management.
