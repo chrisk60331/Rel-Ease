@@ -1,6 +1,6 @@
 # Rel-Ease
 
-**Rel-Ease** is a terminal release manager that pairs a [Click](https://click.palletsprojects.com/) CLI with a [Backboard](https://backboard.io) assistant. The LLM reads your diff, proposes SemVer bumps, updates `release_notes.md`, stages commits, and for Python packages runs **`uv build`** and **`twine upload`** — all through explicit tools you control.
+**Rel-Ease** (`release-cli` on PyPI) is a terminal release manager that pairs a [Click](https://click.palletsprojects.com/) CLI with a [Backboard](https://backboard.io) assistant. The LLM reads your diff, proposes SemVer bumps, updates `release_notes.md`, stages commits, and for Python packages runs **`uv build`** and **`twine upload`** — all through explicit tools you control.
 
 ## Requirements
 

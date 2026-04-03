@@ -14,3 +14,7 @@
 ## v0.2.3
 
 ["Enhanced error message display for 'twine upload' failures.", 'Filtered build artifacts to only include .whl and .gz files.']
+
+## v0.2.4
+
+['Rename project and package name to `release-cli` for consistency.', 'Update `pyproject.toml` and `uv.lock` to reflect new package name.']

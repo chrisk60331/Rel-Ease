@@ -256,8 +256,8 @@ wheels = [
 ]
 
 [[package]]
-name = "rel-ease"
-version = "0.2.2"
+name = "release-cli"
+version = "0.2.3"
 source = { editable = "." }
 dependencies = [
     { name = "backboard-sdk" },

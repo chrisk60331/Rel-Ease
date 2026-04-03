@@ -5,8 +5,8 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "rel-ease"
-version = "0.2.3"
+name = "release-cli"
+version = "0.2.4"
 description = "AI-assisted CLI release manager powered by Backboard"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -36,9 +36,9 @@ dev = [
 [project.scripts]
 rel-ease = "rel_ease.cli:main"
 
-[tool.hatch.build]
-sources = [
-    "src",
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/rel_ease",
 ]
 
 [tool.hatch.build.targets.sdist]
