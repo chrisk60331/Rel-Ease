@@ -32,3 +32,7 @@
 
 - Enhanced `git_push` to handle missing upstream branches.
 - Introduced `git_current_branch` function for better branch management.
+
+## v0.5.0
+
+['Integrate GitHub release creation in the release process.', 'Updated dependency in uv.lock.']

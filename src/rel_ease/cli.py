@@ -331,8 +331,18 @@ def release_cmd(
         raise click.ClickException("Push failed.")
     _ok("Pushed")
 
-    # ── Step 9: Python publish ─────────────────────────────────────────────
-    step_n = 9
+    # ── Step 9: GitHub release ─────────────────────────────────────────────
+    _step("Creating GitHub release", "9")
+    gh = git_ops.gh_release_create(root, tag, tag, notes_body)
+    if gh.get("skipped"):
+        _warn(f"Skipped: {gh.get('error')}")
+    elif not gh.get("ok"):
+        _warn(f"GitHub release failed: {gh.get('stderr', '').strip()}")
+    else:
+        _ok(gh.get("url") or tag)
+
+    # ── Step 10: Python publish ────────────────────────────────────────────
+    step_n = 10
     if repo.kind == RepoKind.PYTHON and publish:
         _step("Building package (uv build)", str(step_n))
         build = release_build.uv_build(root)

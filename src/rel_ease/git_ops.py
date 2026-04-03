@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -103,5 +104,23 @@ def git_push(cwd: Path, follow_tags: bool = True) -> dict:
         "ok": p.returncode == 0,
         "exit_code": p.returncode,
         "stdout": p.stdout or "",
+        "stderr": p.stderr or "",
+    }
+
+
+def gh_release_create(cwd: Path, tag: str, title: str, notes: str) -> dict:
+    if not shutil.which("gh"):
+        return {"ok": False, "skipped": True, "error": "gh CLI not found — install GitHub CLI"}
+    p = subprocess.run(
+        ["gh", "release", "create", tag, "--title", title, "--notes", notes],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return {
+        "ok": p.returncode == 0,
+        "exit_code": p.returncode,
+        "url": (p.stdout or "").strip(),
         "stderr": p.stderr or "",
     }
