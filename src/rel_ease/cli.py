@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import os
 import shutil
+from datetime import date
 from pathlib import Path
 
 import click
@@ -283,8 +284,16 @@ def release_cmd(
     _step("Writing release_notes.md", "4")
     notes_path = root / "release_notes.md"
     mode = "append" if notes_path.exists() else "replace"
-    header = f"## v{new_ver}\n\n"
-    notes_body = header + analysis.release_notes_md.strip()
+    today = date.today().strftime("%Y-%m-%d")
+    pkg_name = repo.package_name or root.name
+    bullets = analysis.release_notes_md.strip()
+    notes_body = (
+        f"## [{new_ver}] — {today}\n\n"
+        f"{bullets}\n\n"
+        f"---\n"
+        f"*Released by [Rel-Ease](https://github.com/chrisk60331/Rel-Ease) · "
+        f"[{pkg_name}](https://pypi.org/project/{pkg_name}/{new_ver}/)*"
+    )
     notes_result = release_build.release_notes_write(root, notes_body, mode=mode)
     if not notes_result.get("ok"):
         _warn(f"Release notes: {notes_result.get('error')}")
@@ -333,7 +342,11 @@ def release_cmd(
 
     # ── Step 9: GitHub release ─────────────────────────────────────────────
     _step("Creating GitHub release", "9")
-    gh = git_ops.gh_release_create(root, tag, tag, notes_body)
+    pkg_name = repo.package_name or root.name
+    gh_body = f"{bullets}\n\n"
+    if repo.kind == RepoKind.PYTHON:
+        gh_body += f"```\npip install {pkg_name}=={new_ver}\n```\n"
+    gh = git_ops.gh_release_create(root, tag, f"{tag} — {analysis.commit_summary}", gh_body)
     if gh.get("skipped"):
         _warn(f"Skipped: {gh.get('error')}")
     elif not gh.get("ok"):

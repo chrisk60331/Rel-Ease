@@ -36,3 +36,12 @@
 ## v0.5.0
 
 ['Integrate GitHub release creation in the release process.', 'Updated dependency in uv.lock.']
+
+## [0.6.0] — 2026-04-02
+
+- Enhanced release notes format with current date and package name.
+- Extracted and normalized bullet point logic for release notes.
+- Included installation command in GitHub release for Python projects.
+
+---
+*Released by [Rel-Ease](https://github.com/chrisk60331/Rel-Ease) · [release-cli](https://pypi.org/project/release-cli/0.6.0/)*

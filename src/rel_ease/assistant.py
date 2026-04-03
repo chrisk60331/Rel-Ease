@@ -146,6 +146,27 @@ async def analyze_diff(
     return DiffAnalysis(
         semver_part=str(data.get("semver_part", "patch")).lower().strip(),
         commit_summary=str(data.get("commit_summary", "release")),
-        release_notes_md=str(data.get("release_notes_md", "")),
+        release_notes_md=_normalise_notes(data.get("release_notes_md", "")),
         reasoning=str(data.get("reasoning", "")),
     )
+
+
+def _normalise_notes(raw: object) -> str:
+    """Coerce whatever the LLM returned into clean markdown bullet lines."""
+    if isinstance(raw, list):
+        bullets = raw
+    elif isinstance(raw, str):
+        # Try to parse as JSON array in case model returned '["a","b"]'
+        stripped = raw.strip()
+        if stripped.startswith("["):
+            try:
+                bullets = json.loads(stripped)
+                if not isinstance(bullets, list):
+                    return stripped
+            except json.JSONDecodeError:
+                return stripped
+        else:
+            return stripped
+    else:
+        return str(raw)
+    return "\n".join(f"- {str(b).strip().lstrip('- ')}" for b in bullets if b)
