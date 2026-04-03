@@ -327,7 +327,8 @@ def release_cmd(
         upload = release_build.twine_upload(root)
         if not upload.get("ok"):
             _fail("twine upload failed")
-            console.print(upload.get("stderr", "")[-3000:])
+            err = (upload.get("stderr") or "") + "\n" + (upload.get("stdout") or "")
+            console.print(err.strip()[-3000:])
             raise click.ClickException("Upload failed.")
         _ok("Uploaded to PyPI")
 

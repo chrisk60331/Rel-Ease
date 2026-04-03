@@ -20,7 +20,10 @@ def uv_build(root: Path) -> dict:
     )
     names: list[str] = []
     if dist.is_dir():
-        names = sorted(f.name for f in dist.iterdir() if f.is_file())
+        names = sorted(
+            f.name for f in dist.iterdir()
+            if f.is_file() and f.suffix in (".whl", ".gz")
+        )
     return {
         "ok": p.returncode == 0,
         "exit_code": p.returncode,
@@ -37,9 +40,12 @@ def twine_upload(root: Path, repository_url: str | None = None) -> dict:
     dist = root / "dist"
     if not dist.is_dir():
         return {"ok": False, "error": "No dist/ directory — run uv_build first"}
-    files = [str(f) for f in sorted(dist.iterdir()) if f.is_file()]
+    files = [
+        str(f) for f in sorted(dist.iterdir())
+        if f.is_file() and f.suffix in (".whl", ".gz")
+    ]
     if not files:
-        return {"ok": False, "error": "dist/ is empty"}
+        return {"ok": False, "error": "dist/ has no .whl or .tar.gz artifacts"}
     cmd = ["twine", "upload", *files]
     if repository_url:
         cmd.extend(["--repository-url", repository_url])
