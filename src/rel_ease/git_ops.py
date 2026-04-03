@@ -69,3 +69,28 @@ def git_commit(cwd: Path, message: str) -> dict:
         "stdout": p.stdout or "",
         "stderr": p.stderr or "",
     }
+
+
+def git_tag(cwd: Path, tag: str, message: str | None = None) -> dict:
+    if message:
+        p = _run_git(cwd, "tag", "-a", tag, "-m", message)
+    else:
+        p = _run_git(cwd, "tag", tag)
+    return {
+        "ok": p.returncode == 0,
+        "exit_code": p.returncode,
+        "stderr": p.stderr or "",
+    }
+
+
+def git_push(cwd: Path, follow_tags: bool = True) -> dict:
+    args = ["push"]
+    if follow_tags:
+        args.append("--follow-tags")
+    p = _run_git(cwd, *args, timeout=180)
+    return {
+        "ok": p.returncode == 0,
+        "exit_code": p.returncode,
+        "stdout": p.stdout or "",
+        "stderr": p.stderr or "",
+    }

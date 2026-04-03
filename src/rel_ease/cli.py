@@ -313,9 +313,28 @@ def release_cmd(
         raise click.ClickException(f"git commit failed:\n{commit_result.get('stderr')}")
     _ok(commit_msg)
 
-    # ── Step 7: Python publish ─────────────────────────────────────────────
+    # ── Step 7: tag ────────────────────────────────────────────────────────
+    _step(f"Tagging v{new_ver}", "7")
+    tag = f"v{new_ver}"
+    tag_result = git_ops.git_tag(root, tag, message=commit_msg)
+    if not tag_result.get("ok"):
+        _warn(f"git tag failed: {tag_result.get('stderr', '').strip()}")
+    else:
+        _ok(tag)
+
+    # ── Step 8: push ───────────────────────────────────────────────────────
+    _step("Pushing (--follow-tags)", "8")
+    push_result = git_ops.git_push(root, follow_tags=True)
+    if not push_result.get("ok"):
+        _fail("git push failed")
+        console.print((push_result.get("stderr") or "").strip()[-2000:])
+        raise click.ClickException("Push failed.")
+    _ok("Pushed")
+
+    # ── Step 9: Python publish ─────────────────────────────────────────────
+    step_n = 9
     if repo.kind == RepoKind.PYTHON and publish:
-        _step("Building package (uv build)", "7")
+        _step("Building package (uv build)", str(step_n))
         build = release_build.uv_build(root)
         if not build.get("ok"):
             _fail("uv build failed")
@@ -323,7 +342,8 @@ def release_cmd(
             raise click.ClickException("Build failed — not uploading.")
         _ok(f"Built: {', '.join(build.get('dist_files', []))}")
 
-        _step("Publishing to PyPI (twine upload)", "8")
+        step_n += 1
+        _step("Publishing to PyPI (twine upload)", str(step_n))
         upload = release_build.twine_upload(root)
         if not upload.get("ok"):
             _fail("twine upload failed")
@@ -336,18 +356,12 @@ def release_cmd(
     console.print(Rule("[re.title]Release Notes[/re.title]", style="bright_cyan"))
     console.print(Markdown(notes_body))
 
-    next_steps = ["Push: `git push`", "Tag: `git tag v{} && git push --tags`".format(new_ver)]
+    footer = f"[re.ok]✓ {tag} shipped.[/re.ok]"
     if repo.kind == RepoKind.RUST:
-        next_steps.append("Publish crate: `cargo publish`")
+        footer += "  Run [bold]cargo publish[/bold] to push to crates.io."
     if repo.kind == RepoKind.PYTHON and not publish:
-        next_steps.append("Publish: `rel-ease release --publish` or `uv build && twine upload dist/*`")
-
-    console.print(
-        Panel(
-            "[re.ok]✓ Done.[/re.ok]  Next:\n" + "\n".join(f"  • {s}" for s in next_steps),
-            border_style="green",
-        )
-    )
+        footer += "  Run [bold]rel-ease release[/bold] (without --no-publish) to upload to PyPI."
+    console.print(Panel(footer, border_style="green"))
 
 
 if __name__ == "__main__":

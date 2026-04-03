@@ -132,7 +132,7 @@ async def analyze_diff(
     api_key: str,
     assistant_id: str | None,
 ) -> DiffAnalysis:
-    client = BackboardClient(api_key=api_key)
+    client = BackboardClient(api_key=api_key, timeout=120)
     aid = await _get_or_create_assistant(client, assistant_id)
     thread = await client.create_thread(aid)
     prompt = _build_prompt(diff, status_files, repo_kind, current_version, hint)

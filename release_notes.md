@@ -22,3 +22,8 @@
 ## v0.2.5
 
 - Updated `release-cli` package version in `uv.lock` file for consistency.
+
+## v0.3.0
+
+- Added git tagging and pushing capability to the release command.
+- Improved error handling and user feedback for release steps.
