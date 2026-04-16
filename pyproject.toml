@@ -6,8 +6,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "release-cli"
-version = "0.6.0"
-description = "AI-assisted CLI release manager powered by Backboard"
+version = "0.7.0"
+description = "AI-assisted CLI release manager powered by ai-layer"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -18,11 +18,11 @@ keywords = [
     "release",
     "semver",
     "cli",
-    "backboard",
+    "ai-layer",
     "ai",
 ]
 dependencies = [
-    "backboard-sdk>=0.1.0",
+    "ai-layer>=0.1.0",
     "click>=8.1.0",
     "rich>=13.0.0",
     "tomli-w>=1.0.0",
@@ -47,6 +47,10 @@ include = [
     "README.md",
     "pyproject.toml",
 ]
+
+[tool.uv.sources.ai-layer]
+path = "../ai_layer"
+editable = true
 
 [tool.ruff]
 line-length = 100

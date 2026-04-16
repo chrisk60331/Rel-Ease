@@ -144,7 +144,8 @@ def doctor(path: Path) -> None:
         icon = "[re.ok]●[/re.ok]" if ok else "[re.warn]○[/re.warn]"
         rows.append((icon, label, detail))
 
-    check("BACKBOARD_API_KEY", bool(os.environ.get("BACKBOARD_API_KEY")))
+    ai_key = os.environ.get("AI_LAYER_KEY") or os.environ.get("AI_LAYER_API_KEY")
+    check("AI_LAYER_KEY", bool(ai_key))
     check("git repo", (root / ".git").is_dir(), str(root))
     for bin_name in ("git", "uv", "twine", "npm", "cargo"):
         check(bin_name, shutil.which(bin_name) is not None)
@@ -177,8 +178,8 @@ def detect_cmd(path: Path) -> None:
     "--assistant-id",
     type=str,
     default=None,
-    envvar="REL_EASE_ASSISTANT_ID",
-    help="Backboard assistant UUID override.",
+    envvar="REL_EASE_AGENT_ID",
+    help="ai-layer agent ID override.",
 )
 @click.option("--dry-run", is_flag=True, help="Analyze only — no version bump, commit, build, or upload.")
 @click.option("--publish/--no-publish", default=True, help="Run uv build + twine upload for Python (default: on).")
@@ -191,9 +192,9 @@ def release_cmd(
 ) -> None:
     """Analyze diff with Backboard, then run the full release sequence."""
     root = path.resolve()
-    key = os.environ.get("BACKBOARD_API_KEY")
+    key = os.environ.get("AI_LAYER_KEY") or os.environ.get("AI_LAYER_API_KEY")
     if not key:
-        raise click.ClickException("BACKBOARD_API_KEY not set (run: rel-ease doctor).")
+        raise click.ClickException("AI_LAYER_KEY not set (run: rel-ease doctor).")
     if not (root / ".git").is_dir():
         raise click.ClickException(f"Not a git repository: {root}")
 
@@ -225,7 +226,7 @@ def release_cmd(
     _ok(f"{len(status_files)} changed file(s)")
 
     # ── Step 2: LLM analysis ───────────────────────────────────────────────
-    _step("Asking Backboard to analyze diff…", "2")
+    _step("Asking ai-layer to analyze diff…", "2")
     try:
         analysis: DiffAnalysis = asyncio.run(
             analyze_diff(
@@ -239,7 +240,7 @@ def release_cmd(
             )
         )
     except Exception as e:
-        raise click.ClickException(f"Backboard error: {e}") from e
+        raise click.ClickException(f"ai-layer error: {e}") from e
 
     part = analysis.semver_part if analysis.semver_part in ("patch", "minor", "major") else "patch"
     old_ver = repo.current_version or "0.0.0"

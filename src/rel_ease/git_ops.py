@@ -62,8 +62,12 @@ def git_add(cwd: Path, paths: list[str]) -> dict:
     }
 
 
-def git_commit(cwd: Path, message: str) -> dict:
-    p = _run_git(cwd, "commit", "-m", message)
+def git_commit(cwd: Path, message: str, no_gpg_sign: bool = False) -> dict:
+    args = ["commit"]
+    if no_gpg_sign:
+        args.extend(["-c", "commit.gpgsign=false"])
+    args.extend(["-m", message])
+    p = _run_git(cwd, *args)
     return {
         "ok": p.returncode == 0,
         "exit_code": p.returncode,

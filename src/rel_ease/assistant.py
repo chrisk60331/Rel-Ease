@@ -1,15 +1,13 @@
-"""Single-turn Backboard call: analyze diff → version decision + release notes."""
+"""Single-turn ai-layer call: analyze diff → version decision + release notes."""
 
 from __future__ import annotations
 
 import json
 import os
 import re
-import uuid
 from dataclasses import dataclass
-from pathlib import Path
 
-from backboard import BackboardClient
+from ai_layer.client import AILayerClient
 
 ASSISTANT_NAME = "rel-ease"
 
@@ -47,41 +45,35 @@ def _extract_json(text: str) -> dict:
     m = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
     if m:
         text = m.group(1)
-    # Try to find the first {...} block
     m2 = re.search(r"\{.*\}", text, re.DOTALL)
     if m2:
         text = m2.group(0)
     return json.loads(text)
 
 
-async def _get_or_create_assistant(client: BackboardClient, aid_str: str | None) -> uuid.UUID:
-    if aid_str:
-        try:
-            return uuid.UUID(aid_str)
-        except ValueError:
-            pass
-    env = os.environ.get("REL_EASE_ASSISTANT_ID")
+async def _get_or_create_agent(client: AILayerClient, agent_id_hint: str | None) -> str:
+    if agent_id_hint:
+        return agent_id_hint
+    env = os.environ.get("REL_EASE_AGENT_ID")
     if env:
-        try:
-            return uuid.UUID(env)
-        except ValueError:
-            pass
-    for a in await client.list_assistants():
-        if a.name == ASSISTANT_NAME:
-            # Keep system prompt fresh, no tools needed
-            await client.update_assistant(
-                a.assistant_id,
+        return env
+    for a in await client.list_agents():
+        if a.get("name") == ASSISTANT_NAME:
+            await client.update_agent(
+                a["id"],
                 system_prompt=SYSTEM_PROMPT,
                 tools=[],
+                builtin_tools=[],
             )
-            return a.assistant_id
-    created = await client.create_assistant(
+            return a["id"]
+    created = await client.create_agent(
         name=ASSISTANT_NAME,
-        description="Rel-Ease diff analyzer",
+        model=os.environ.get("REL_EASE_MODEL", "anthropic/claude-sonnet-4-6"),
         system_prompt=SYSTEM_PROMPT,
         tools=[],
+        builtin_tools=[],
     )
-    return created.assistant_id
+    return created["id"]
 
 
 def _escape_braces(text: str) -> str:
@@ -132,12 +124,18 @@ async def analyze_diff(
     api_key: str,
     assistant_id: str | None,
 ) -> DiffAnalysis:
-    client = BackboardClient(api_key=api_key, timeout=120)
-    aid = await _get_or_create_assistant(client, assistant_id)
-    thread = await client.create_thread(aid)
+    base_url = os.environ.get("AI_LAYER_URL", "http://localhost:8000")
+    client = AILayerClient(base_url=base_url, api_key=api_key, timeout_s=120)
+    agent_id = await _get_or_create_agent(client, assistant_id)
+    thread = await client.create_thread(agent_id=agent_id)
+    thread_id = thread["id"]
     prompt = _build_prompt(diff, status_files, repo_kind, current_version, hint)
-    response = await client.add_message(thread.thread_id, prompt, stream=False)
-    raw = (response.content or "").strip()
+    raw, _ = await client.collect_text(
+        agent_id=agent_id,
+        thread_id=thread_id,
+        message={"role": "user", "content": prompt},
+    )
+    raw = raw.strip()
     try:
         data = _extract_json(raw)
     except (json.JSONDecodeError, AttributeError) as e:
@@ -156,7 +154,6 @@ def _normalise_notes(raw: object) -> str:
     if isinstance(raw, list):
         bullets = raw
     elif isinstance(raw, str):
-        # Try to parse as JSON array in case model returned '["a","b"]'
         stripped = raw.strip()
         if stripped.startswith("["):
             try:

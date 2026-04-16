@@ -45,3 +45,15 @@
 
 ---
 *Released by [Rel-Ease](https://github.com/chrisk60331/Rel-Ease) · [release-cli](https://pypi.org/project/release-cli/0.6.0/)*
+
+## [0.7.0] — 2026-04-16
+
+- Switched AI backend from `backboard-sdk` to `ai-layer` for all LLM interactions
+- Updated API key environment variable from `BACKBOARD_API_KEY` to `AI_LAYER_KEY` / `AI_LAYER_API_KEY`
+- Updated agent ID environment variable from `REL_EASE_ASSISTANT_ID` to `REL_EASE_AGENT_ID`
+- Added `AI_LAYER_URL` environment variable support for configuring the ai-layer base URL
+- Added `REL_EASE_MODEL` environment variable to override the default LLM model
+- Updated `doctor` command to check for `AI_LAYER_KEY` instead of `BACKBOARD_API_KEY`
+
+---
+*Released by [Rel-Ease](https://github.com/chrisk60331/Rel-Ease) · [release-cli](https://pypi.org/project/release-cli/0.7.0/)*
