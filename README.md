@@ -1,11 +1,10 @@
 # Rel-Ease
 
-**Rel-Ease** (`release-cli` on PyPI) is a terminal release manager that pairs a [Click](https://click.palletsprojects.com/) CLI with a [Backboard](https://backboard.io) assistant. The LLM reads your diff, proposes SemVer bumps, updates `release_notes.md`, stages commits, and for Python packages runs **`uv build`** and **`twine upload`** — all through explicit tools you control.
+**Rel-Ease** (`release-cli` on PyPI) is a terminal release manager that pairs a [Click](https://click.palletsprojects.com/) CLI with an AI agent. The LLM reads your diff, proposes SemVer bumps, updates `release_notes.md`, stages commits, and for Python packages runs **`uv build`** and **`twine upload`** — all through explicit tools you control.
 
 ## Requirements
 
 - Python 3.11+
-- `git`, `BACKBOARD_API_KEY`
 - **Python projects:** `uv`, `twine` (and PyPI credentials via `TWINE_USERNAME` / `TWINE_PASSWORD` or standard `twine` config)
 - **Node/TypeScript:** `npm` (for `npm install --package-lock-only` after version bumps)
 - **Rust:** manual `cargo publish` after the assistant bumps `Cargo.toml` and commits (by design)
@@ -22,7 +21,6 @@ uv pip install -e .
 ## Quick start
 
 ```bash
-export BACKBOARD_API_KEY=sk-...
 
 # Sanity-check environment and repo detection
 rel-ease doctor .
@@ -30,7 +28,7 @@ rel-ease doctor .
 # Show how the project is classified (no network)
 rel-ease detect .
 
-# Run the release assistant (creates/updates Backboard assistant named `rel-ease`)
+# Run the release assistant (creates/updates agent named `rel-ease`)
 rel-ease release .
 
 # Read-only rehearsal
@@ -40,7 +38,7 @@ rel-ease release . --dry-run
 rel-ease release . --hint "User asked for a minor bump for the new API."
 ```
 
-Optional: set `REL_EASE_ASSISTANT_ID` to pin a specific Backboard assistant UUID after the first run.
+Optional: set `REL_EASE_ASSISTANT_ID` to pin a specific agent UUID after the first run.
 
 ## Repo detection (deterministic)
 
@@ -66,13 +64,12 @@ If the kind is **Python**, `uv_build` and `twine_upload` run for real. For **Nod
 | `release_notes_update` | Create/update `release_notes.md` (`replace` or `append`) |
 | `twine_upload` | Upload artifacts from `dist/` (Python only) |
 
-The Backboard model interprets diffs and drives the sequence; every mutation goes through these tools on your machine.
+The language model interprets diffs and drives the sequence; every mutation goes through these tools on your machine.
 
 ## Environment
 
 | Variable | Purpose |
 |----------|---------|
-| `BACKBOARD_API_KEY` | Required for `rel-ease release` |
 | `REL_EASE_ASSISTANT_ID` | Optional UUID override |
 | `TWINE_USERNAME` / `TWINE_PASSWORD` | PyPI upload (if not using another `twine` config) |
 
