@@ -849,7 +849,7 @@ wheels = [
 
 [[package]]
 name = "release-cli"
-version = "0.7.3"
+version = "0.7.4"
 source = { editable = "." }
 dependencies = [
     { name = "ai-layer" },
