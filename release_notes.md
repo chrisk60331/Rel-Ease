@@ -57,3 +57,18 @@
 
 ---
 *Released by [Rel-Ease](https://github.com/chrisk60331/Rel-Ease) · [release-cli](https://pypi.org/project/release-cli/0.7.0/)*
+
+## [0.7.1] - 2026-05-02
+
+- Release release-cli 0.7.1.
+- Includes repository changes in pyproject.toml, src/rel_ease/cli.py, uv.lock, mcp_server.py, src/rel_ease/api.py, src/rel_ease/mcp_tools.py, start.sh.
+
+## [0.7.2] - 2026-05-02
+
+- Release release-cli 0.7.2.
+- Includes repository changes in mcp_server.py, pyproject.toml, release_notes.md, src/rel_ease/api.py, src/rel_ease/cli.py, src/rel_ease/mcp_tools.py, start.sh, uv.lock.
+
+## [0.7.3] - 2026-05-02
+
+- Release release-cli 0.7.3.
+- Includes repository changes in mcp_server.py, pyproject.toml, release_notes.md, src/rel_ease/api.py, src/rel_ease/cli.py, src/rel_ease/git_ops.py, src/rel_ease/mcp_tools.py, start.sh, uv.lock.

@@ -183,12 +183,14 @@ def detect_cmd(path: Path) -> None:
 )
 @click.option("--dry-run", is_flag=True, help="Analyze only — no version bump, commit, build, or upload.")
 @click.option("--publish/--no-publish", default=True, help="Run uv build + twine upload for Python (default: on).")
+@click.option("--no-gpg-sign", "no_gpg_sign", is_flag=True, help="Skip GPG commit signing.")
 def release_cmd(
     path: Path,
     hint: str | None,
     assistant_id: str | None,
     dry_run: bool,
     publish: bool,
+    no_gpg_sign: bool,
 ) -> None:
     """Analyze diff with Backboard, then run the full release sequence."""
     root = path.resolve()
@@ -318,7 +320,7 @@ def release_cmd(
     _step("Committing", "6")
     label = part.capitalize()
     commit_msg = f"v{new_ver} {label}: {analysis.commit_summary}"
-    commit_result = git_ops.git_commit(root, commit_msg)
+    commit_result = git_ops.git_commit(root, commit_msg, no_gpg_sign=no_gpg_sign)
     if not commit_result.get("ok"):
         raise click.ClickException(f"git commit failed:\n{commit_result.get('stderr')}")
     _ok(commit_msg)

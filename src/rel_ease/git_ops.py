@@ -65,7 +65,7 @@ def git_add(cwd: Path, paths: list[str]) -> dict:
 def git_commit(cwd: Path, message: str, no_gpg_sign: bool = False) -> dict:
     args = ["commit"]
     if no_gpg_sign:
-        args.extend(["-c", "commit.gpgsign=false"])
+        args = ["-c", "commit.gpgsign=false", *args]
     args.extend(["-m", message])
     p = _run_git(cwd, *args)
     return {
@@ -76,11 +76,14 @@ def git_commit(cwd: Path, message: str, no_gpg_sign: bool = False) -> dict:
     }
 
 
-def git_tag(cwd: Path, tag: str, message: str | None = None) -> dict:
+def git_tag(cwd: Path, tag: str, message: str | None = None, no_gpg_sign: bool = False) -> dict:
+    args = ["tag"]
+    if no_gpg_sign:
+        args = ["-c", "tag.gpgSign=false", *args]
     if message:
-        p = _run_git(cwd, "tag", "-a", tag, "-m", message)
+        p = _run_git(cwd, *args, "-a", tag, "-m", message)
     else:
-        p = _run_git(cwd, "tag", tag)
+        p = _run_git(cwd, *args, tag)
     return {
         "ok": p.returncode == 0,
         "exit_code": p.returncode,
