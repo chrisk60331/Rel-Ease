@@ -77,3 +77,8 @@
 
 - Release release-cli 0.7.4.
 - Includes repository changes in src/rel_ease/git_ops.py, uv.lock.
+
+## [0.7.5] - 2026-05-02
+
+- Release rel-ease-agent 0.7.5.
+- Includes repository changes in pyproject.toml, uv.lock.

@@ -848,7 +848,7 @@ wheels = [
 ]
 
 [[package]]
-name = "release-cli"
+name = "rel-ease-agent"
 version = "0.7.4"
 source = { editable = "." }
 dependencies = [
