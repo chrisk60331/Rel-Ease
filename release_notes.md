@@ -72,3 +72,8 @@
 
 - Release release-cli 0.7.3.
 - Includes repository changes in mcp_server.py, pyproject.toml, release_notes.md, src/rel_ease/api.py, src/rel_ease/cli.py, src/rel_ease/git_ops.py, src/rel_ease/mcp_tools.py, start.sh, uv.lock.
+
+## [0.7.4] - 2026-05-02
+
+- Release release-cli 0.7.4.
+- Includes repository changes in src/rel_ease/git_ops.py, uv.lock.
