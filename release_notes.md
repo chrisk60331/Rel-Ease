@@ -82,3 +82,10 @@
 
 - Release rel-ease-agent 0.7.5.
 - Includes repository changes in pyproject.toml, uv.lock.
+
+## [0.8.0] - 2026-05-02
+
+- Added `describe_diff` tool: analyze staged and unstaged git changes with an LLM to produce a release summary, release notes, commit message, and risk notes — without making any modifications.
+- Release notes generated during the `release` workflow are now LLM-written from actual diff content instead of a plain list of changed filenames.
+- Fixed AI Layer base URL resolution so the `/api` path suffix is always correctly appended regardless of how `AI_LAYER_URL` is configured.
+- Introduced a dedicated `rel-ease-diff-describer` agent with its own configurable ID (`REL_EASE_DIFF_AGENT_ID` env var) for diff summarization, independent of the version-bump agent.

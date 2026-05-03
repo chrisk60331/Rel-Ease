@@ -21,6 +21,10 @@ def get_incremental_version(directory: str) -> dict[str, Any]:
     return _api.get_incremental_version(directory=directory)
 
 
+def describe_diff(directory: str) -> dict[str, Any]:
+    return _api.describe_diff(directory=directory)
+
+
 def list_recent_releases() -> list[dict[str, Any]]:
     return _api.list_recent_releases()
 
@@ -29,6 +33,7 @@ DISPATCH = {
     "release": release,
     "get_version": get_version,
     "get_incremental_version": get_incremental_version,
+    "describe_diff": describe_diff,
     "list_recent_releases": list_recent_releases,
 }
 
@@ -79,6 +84,26 @@ TOOLS = [
         "function": {
             "name": "get_incremental_version",
             "description": "Return the deterministic next patch version for a project.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "directory": {
+                        "type": "string",
+                        "description": "Project directory name under REL_EASE_PROJECTS_ROOT.",
+                    },
+                },
+                "required": ["directory"],
+                "additionalProperties": False,
+            },
+        }
+    },
+    {
+        "function": {
+            "name": "describe_diff",
+            "description": (
+                "Read staged and unstaged git diffs for a project and return an LLM-written "
+                "summary, release notes, commit summary, and risk notes. This is read-only."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {

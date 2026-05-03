@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rel-ease-agent"
-version = "0.7.5"
+version = "0.8.0"
 description = "AI-assisted CLI release manager powered by ai-layer"
 readme = "README.md"
 requires-python = ">=3.11"
